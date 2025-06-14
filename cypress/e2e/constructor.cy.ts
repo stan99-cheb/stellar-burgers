@@ -74,7 +74,11 @@ describe('Перехват запроса ингредиентов', () => {
 describe('Создание заказа', () => {
   beforeEach(() => {
     cy.visit('/login');
-
+    // В корневом каталоге проекта создайте файл cypress.env.json и добавьте туда данные для входа:
+    // {
+    //     "admin_user": "user@domain.com",
+    //     "admin_password": "password123"
+    // }
     cy.get('input[name="email"]').type(Cypress.env('admin_user'));
     cy.get('input[name="password"]').type(Cypress.env('admin_password'));
     cy.get('button[type="submit"]').click();
