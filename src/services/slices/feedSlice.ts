@@ -8,7 +8,7 @@ type InitialState = TOrdersData & {
   current: TOrder | null;
 };
 
-const initialState: InitialState = {
+export const initialState: InitialState = {
   orders: [],
   total: 0,
   totalToday: 0,

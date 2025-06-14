@@ -1,17 +1,26 @@
+import { TOrder } from '@utils-types';
 import ordersSlice, {
   getOrders,
   createOrder,
-  clearCurrentOrder
+  clearCurrentOrder,
+  initialState
 } from './ordersSlice';
 
-describe('Тестирование слайса ordersSlice', () => {
-  const initialState = {
-    orders: [],
-    currentOrder: null,
-    loading: false,
-    error: null
-  };
+const ORDER: TOrder = {
+  _id: '68266246c2f30c001cb24190',
+  ingredients: [
+    '643d69a5c3f7b9001cfa093d',
+    '643d69a5c3f7b9001cfa0941',
+    '643d69a5c3f7b9001cfa093e'
+  ],
+  status: 'done',
+  name: 'Флюоресцентный люминесцентный био-марсианский бургер',
+  createdAt: '2025-05-15T21:53:10.512Z',
+  updatedAt: '2025-05-15T21:53:11.178Z',
+  number: 77339
+};
 
+describe('Тестирование слайса ordersSlice', () => {
   it('тест initialState', () => {
     expect(ordersSlice(undefined, { type: '' })).toEqual(initialState);
   });
@@ -19,19 +28,7 @@ describe('Тестирование слайса ordersSlice', () => {
   it('тест очистки текущего заказа', () => {
     const prevState = {
       ...initialState,
-      currentOrder: {
-        _id: '68266246c2f30c001cb24190',
-        ingredients: [
-          '643d69a5c3f7b9001cfa093d',
-          '643d69a5c3f7b9001cfa0941',
-          '643d69a5c3f7b9001cfa093e'
-        ],
-        status: 'done',
-        name: 'Флюоресцентный люминесцентный био-марсианский бургер',
-        createdAt: '2025-05-15T21:53:10.512Z',
-        updatedAt: '2025-05-15T21:53:11.178Z',
-        number: 77339
-      }
+      currentOrder: ORDER
     };
     const action = clearCurrentOrder();
     const state = ordersSlice(prevState, action);
@@ -46,24 +43,9 @@ describe('Тестирование слайса ordersSlice', () => {
   });
 
   it('тест обработки состояния fulfilled для getOrders', () => {
-    const ordersPayload = [
-      {
-        _id: '68266246c2f30c001cb24190',
-        ingredients: [
-          '643d69a5c3f7b9001cfa093d',
-          '643d69a5c3f7b9001cfa0941',
-          '643d69a5c3f7b9001cfa093e'
-        ],
-        status: 'done',
-        name: 'Флюоресцентный люминесцентный био-марсианский бургер',
-        createdAt: '2025-05-15T21:53:10.512Z',
-        updatedAt: '2025-05-15T21:53:11.178Z',
-        number: 77339
-      }
-    ];
-    const action = { type: getOrders.fulfilled.type, payload: ordersPayload };
+    const action = { type: getOrders.fulfilled.type, payload: [ORDER] };
     const state = ordersSlice({ ...initialState, loading: true }, action);
-    expect(state.orders).toEqual(ordersPayload);
+    expect(state.orders).toEqual([ORDER]);
     expect(state.loading).toBe(false);
     expect(state.error).toBeNull();
   });
@@ -84,25 +66,12 @@ describe('Тестирование слайса ordersSlice', () => {
   });
 
   it('тест обработки состояния fulfilled для createOrder', () => {
-    const orderPayload = {
-      _id: '68266246c2f30c001cb24190',
-      ingredients: [
-        '643d69a5c3f7b9001cfa093d',
-        '643d69a5c3f7b9001cfa0941',
-        '643d69a5c3f7b9001cfa093e'
-      ],
-      status: 'done',
-      name: 'Флюоресцентный люминесцентный био-марсианский бургер',
-      createdAt: '2025-05-15T21:53:10.512Z',
-      updatedAt: '2025-05-15T21:53:11.178Z',
-      number: 77339
-    };
     const action = {
       type: createOrder.fulfilled.type,
-      payload: { order: orderPayload }
+      payload: { order: ORDER }
     };
     const state = ordersSlice({ ...initialState, loading: true }, action);
-    expect(state.currentOrder).toEqual(orderPayload);
+    expect(state.currentOrder).toEqual(ORDER);
     expect(state.loading).toBe(false);
     expect(state.error).toBeNull();
   });

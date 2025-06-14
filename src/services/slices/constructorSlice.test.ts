@@ -2,7 +2,8 @@ import constructorReducer, {
   constructorAdd,
   constructorDel,
   constructorMoveDown,
-  constructorMoveUp
+  constructorMoveUp,
+  initialState
 } from './constructorSlice';
 import { clearCurrentOrder } from './ordersSlice';
 import { TIngredient, TConstructorIngredient } from '@utils-types';
@@ -51,10 +52,7 @@ describe('Тестирование слайса constructorSlice', () => {
   };
 
   it('тест initialState', () => {
-    expect(constructorReducer(undefined, { type: '' })).toEqual({
-      bun: null,
-      ingredients: []
-    });
+    expect(constructorReducer(undefined, { type: '' })).toEqual(initialState);
   });
 
   it('тест добавления булки', () => {

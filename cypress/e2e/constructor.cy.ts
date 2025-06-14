@@ -1,3 +1,5 @@
+import { SELECTORS } from 'cypress/support/constants';
+
 beforeEach(() => {
   cy.visit('/');
   cy.viewport(1440, 800);
@@ -14,22 +16,15 @@ describe('Перехват запроса ингредиентов', () => {
   });
 
   it('Добавляет ингредиенты в конструктор по нажатию на кнопку "Добавить"', () => {
-    cy.contains('Краторная булка N-200i')
-      .parent()
-      .find('button')
-      .contains('Добавить')
-      .click();
+    cy.addIngredient('Краторная булка N-200i');
+    cy.addIngredient('Биокотлета из марсианской Магнолии');
 
-    cy.get('.constructor-element').should('contain', 'Краторная булка N-200i');
-
-    cy.contains('Биокотлета из марсианской Магнолии')
-      .parent()
-      .find('button')
-      .contains('Добавить')
-      .click();
-
-    cy.get('.constructor-element').should(
-      'contain',
+    cy.shouldBeIngredientInConstructor(
+      SELECTORS.CONSTRUCTOR_ELEMENT,
+      'Краторная булка N-200i'
+    );
+    cy.shouldBeIngredientInConstructor(
+      SELECTORS.CONSTRUCTOR_ELEMENT,
       'Биокотлета из марсианской Магнолии'
     );
   });
@@ -38,36 +33,38 @@ describe('Перехват запроса ингредиентов', () => {
 describe('Перехват запроса ингредиентов', () => {
   it('Открывает модальное окно при клике на ингредиент', () => {
     cy.contains('Краторная булка N-200i').click();
-    cy.contains('Детали ингредиента').should('be.visible');
-    cy.get('#modals').should('contain', 'Краторная булка N-200i');
+    cy.contains(SELECTORS.INGREDIENTS_DETAILS).should('be.visible');
+    cy.get(SELECTORS.MODAL).should('contain', 'Краторная булка N-200i');
   });
 
   it('Закрывает модальное окно при клике на крестик', () => {
     cy.contains('Краторная булка N-200i').click();
-    cy.contains('Детали ингредиента').should('be.visible');
-    cy.get('#modals').should('contain', 'Краторная булка N-200i');
+    cy.contains(SELECTORS.INGREDIENTS_DETAILS).should('be.visible');
+    cy.get(SELECTORS.MODAL).should('contain', 'Краторная булка N-200i');
 
-    cy.get('#modals').find('button[aria-label="Закрыть"]').click();
+    cy.get(SELECTORS.MODAL).find('button[aria-label="Закрыть"]').click();
 
-    cy.contains('Детали ингредиента').should('not.exist');
+    cy.contains(SELECTORS.INGREDIENTS_DETAILS).should('not.exist');
   });
 
   it('Закрывает модальное окно при клике на оверлей', () => {
     cy.contains('Краторная булка N-200i').click();
-    cy.contains('Детали ингредиента').should('be.visible');
+    cy.contains(SELECTORS.INGREDIENTS_DETAILS).should('be.visible');
 
-    cy.get('#modals').find('[aria-label="overlay"]').click({ force: true });
+    cy.get(SELECTORS.MODAL)
+      .find(SELECTORS.MODAL_OVERLAY)
+      .click({ force: true });
 
-    cy.contains('Детали ингредиента').should('not.exist');
+    cy.contains(SELECTORS.INGREDIENTS_DETAILS).should('not.exist');
   });
 
   it('Закрывает модальное окно по нажатию на кнопку Escape', () => {
     cy.contains('Краторная булка N-200i').click();
-    cy.contains('Детали ингредиента').should('be.visible');
+    cy.contains(SELECTORS.INGREDIENTS_DETAILS).should('be.visible');
 
     cy.get('body').type('{esc}');
 
-    cy.contains('Детали ингредиента').should('not.exist');
+    cy.contains(SELECTORS.INGREDIENTS_DETAILS).should('not.exist');
   });
 });
 
@@ -89,42 +86,30 @@ describe('Создание заказа', () => {
       fixture: 'order.json'
     }).as('createOrder');
 
-    cy.contains('Флюоресцентная булка R2-D3')
-      .parent()
-      .find('button')
-      .contains('Добавить')
-      .click();
-    cy.contains('Биокотлета из марсианской Магнолии')
-      .parent()
-      .find('button')
-      .contains('Добавить')
-      .click();
-    cy.contains('Мясо бессмертных моллюсков Protostomia')
-      .parent()
-      .find('button')
-      .contains('Добавить')
-      .click();
+    cy.addIngredient('Флюоресцентная булка R2-D3');
+    cy.addIngredient('Биокотлета из марсианской Магнолии');
+    cy.addIngredient('Мясо бессмертных моллюсков Protostomia');
 
-    cy.get('.constructor-element').should(
-      'contain',
+    cy.shouldBeIngredientInConstructor(
+      SELECTORS.CONSTRUCTOR_ELEMENT,
       'Флюоресцентная булка R2-D3'
     );
-    cy.get('.constructor-element').should(
-      'contain',
+    cy.shouldBeIngredientInConstructor(
+      SELECTORS.CONSTRUCTOR_ELEMENT,
       'Биокотлета из марсианской Магнолии'
     );
-    cy.get('.constructor-element').should(
-      'contain',
+    cy.shouldBeIngredientInConstructor(
+      SELECTORS.CONSTRUCTOR_ELEMENT,
       'Мясо бессмертных моллюсков Protostomia'
     );
 
     cy.contains('Оформить заказ').click();
 
     cy.wait('@createOrder').its('response.statusCode').should('eq', 200);
-    cy.get('#modals').find('h2').contains('81234').should('be.visible');
+    cy.get(SELECTORS.MODAL).find('h2').contains('81234').should('be.visible');
 
-    cy.get('#modals').find('button[aria-label="Закрыть"]').click();
+    cy.get(SELECTORS.MODAL).find('button[aria-label="Закрыть"]').click();
 
-    cy.get('.constructor-element').should('not.exist');
+    cy.get(SELECTORS.CONSTRUCTOR_ELEMENT).should('not.exist');
   });
 });
