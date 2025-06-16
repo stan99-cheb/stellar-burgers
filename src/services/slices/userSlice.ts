@@ -1,5 +1,3 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { getCookie } from '../../utils/cookie';
 import {
   getUserApi,
   loginUserApi,
@@ -9,7 +7,8 @@ import {
   TRegisterData,
   updateUserApi
 } from '@api';
-import { RootState } from '../store';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { getCookie } from '../../utils/cookie';
 import { TUser } from '@utils-types';
 
 type InitialState = {
@@ -19,7 +18,7 @@ type InitialState = {
   error: string | null;
 };
 
-const initialState: InitialState = {
+export const initialState: InitialState = {
   isAuthChecked: false,
   isLoading: false,
   user: null,
@@ -56,28 +55,34 @@ const userSlice = createSlice({
   extraReducers(builder) {
     builder
       .addCase(userRegister.pending, (state) => {
+        state.isLoading = true;
         state.isAuthChecked = false;
         state.error = null;
       })
-      .addCase(userRegister.fulfilled, (state, action) => {
+      .addCase(userRegister.fulfilled, (state, { payload }) => {
         state.isAuthChecked = true;
-        console.log('userRegister fulfilled', action.payload);
+        state.isLoading = false;
+        state.user = payload.user;
       })
       .addCase(userRegister.rejected, (state, { error }) => {
         state.isAuthChecked = true;
+        state.isLoading = false;
         state.error = error.message || 'Unknown error';
       })
 
       .addCase(userLogin.pending, (state) => {
+        state.isLoading = true;
         state.isAuthChecked = false;
         state.error = null;
       })
-      .addCase(userLogin.fulfilled, (state, action) => {
+      .addCase(userLogin.fulfilled, (state, { payload }) => {
+        state.isLoading = false;
         state.isAuthChecked = true;
-        state.user = action.payload.user;
+        state.user = payload.user;
         state.error = null;
       })
       .addCase(userLogin.rejected, (state, { error }) => {
+        state.isLoading = false;
         state.isAuthChecked = true;
         state.error = error.message || 'Unknown error';
       })
@@ -109,15 +114,19 @@ const userSlice = createSlice({
       })
 
       .addCase(userCheckAuth.pending, (state) => {
+        state.isLoading = true;
         state.isAuthChecked = false;
         state.error = null;
       })
-      .addCase(userCheckAuth.fulfilled, (state, action) => {
+      .addCase(userCheckAuth.fulfilled, (state, { payload }) => {
+        state.isLoading = false;
         state.isAuthChecked = true;
-        state.user = action.payload.user;
+        state.user = payload.user;
       })
       .addCase(userCheckAuth.rejected, (state, { error }) => {
+        state.isLoading = false;
         state.isAuthChecked = true;
+        state.user = null;
         state.error = error.message || 'Unknown error';
       });
   }

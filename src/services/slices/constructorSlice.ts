@@ -7,7 +7,7 @@ type InitialState = {
   ingredients: TConstructorIngredient[];
 };
 
-const initialState: InitialState = {
+export const initialState: InitialState = {
   bun: null,
   ingredients: []
 };
@@ -20,7 +20,7 @@ const constructorSlice = createSlice({
       if (ingredient.type === 'bun') {
         state.bun = ingredient;
       } else {
-        state.ingredients.push({ ...ingredient, id: crypto.randomUUID() });
+        state.ingredients.push(ingredient);
       }
     },
     constructorDel(state, { payload: ingredient }) {
